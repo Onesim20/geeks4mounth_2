@@ -1,0 +1,136 @@
+{% load static %}
+<!doctype html>
+<html lang="ru" data-bs-theme="light">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="{% block description %}Блог — статьи и заметки{% endblock %}">
+    <title>{% block title %}Blog{% endblock %}</title>
+
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB"
+          crossorigin="anonymous">
+
+    <!-- Свои стили -->
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    {% block extra_css %}{% endblock %}
+</head>
+<body class="d-flex flex-column min-vh-100">
+
+    <!-- Навигация -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="#">Blog</a>
+            <button class="navbar-toggler" type="button"
+                    data-bs-toggle="collapse" data-bs-target="#mainNavbar"
+                    aria-controls="mainNavbar" aria-expanded="false" aria-label="Меню">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="mainNavbar">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.resolver_match.url_name == 'home' %}active{% endif %}"
+                           href="#">Главная</a>
+                    </li>
+                    {% if user.is_authenticated %}
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.resolver_match.url_name == 'post_create' %}active{% endif %}"
+                           href="#">Новый пост</a>
+                    </li>
+                    {% endif %}
+                </ul>
+
+                <!-- Поиск -->
+                <form class="d-flex me-lg-3 mb-2 mb-lg-0" role="search" method="get" action="#">
+                    <input class="form-control me-2" type="search" name="q"
+                           placeholder="Поиск..." value="{{ request.GET.q|default:'' }}" aria-label="Поиск">
+                    <button class="btn btn-outline-light" type="submit">Найти</button>
+                </form>
+
+                <!-- Пользователь -->
+                <ul class="navbar-nav">
+                    {% if user.is_authenticated %}
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button"
+                           data-bs-toggle="dropdown" aria-expanded="false">
+                            {{ user.username }}
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            {% if user.is_staff %}
+                            <li><a class="dropdown-item" href="#">Админка</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            {% endif %}
+                            <li>
+                                <!-- В Django 5+ выход только через POST -->
+                                <form method="post" action="#">
+                                    {% csrf_token %}
+                                    <button type="submit" class="dropdown-item">Выйти</button>
+                                </form>
+                            </li>
+                        </ul>
+                    </li>
+                    {% else %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Войти</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="btn btn-primary ms-lg-2" href="#">Регистрация</a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Основной контент -->
+    <main class="flex-grow-1 py-4">
+        <div class="container">
+
+            <!-- Сообщения Django (messages framework) -->
+            {% if messages %}
+                {% for message in messages %}
+                <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags|default:'info' }}{% endif %} alert-dismissible fade show"
+                     role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Закрыть"></button>
+                </div>
+                {% endfor %}
+            {% endif %}
+
+            <div class="row">
+                <div class="col-lg-8">
+                    {% block content %}{% endblock %}
+                </div>
+
+                <aside class="col-lg-4 mt-4 mt-lg-0">
+                    {% block sidebar %}
+                    <div class="card shadow-sm">
+                        <div class="card-header fw-semibold">О блоге</div>
+                        <div class="card-body">
+                            <p class="card-text mb-0">Здесь публикуются статьи и заметки.</p>
+                        </div>
+                    </div>
+                    {% endblock %}
+                </aside>
+            </div>
+        </div>
+    </main>
+
+    <!-- Подвал -->
+    <footer class="bg-dark text-white-50 py-3 mt-auto">
+        <div class="container d-flex flex-column flex-md-row justify-content-between align-items-center">
+            <span>&copy; {% now "Y" %} Blog. Все права защищены.</span>
+            <a href="#" class="link-light link-underline-opacity-0">Наверх ↑</a>
+        </div>
+    </footer>
+
+    <!-- Bootstrap 5 JS (с Popper) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
+            crossorigin="anonymous"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

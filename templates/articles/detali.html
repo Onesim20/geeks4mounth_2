@@ -1,0 +1,116 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ article.title }} — Blog{% endblock %}
+
+{% block extra_css %}
+<style>
+    .article-cover {
+        aspect-ratio: 21 / 9;
+        object-fit: cover;
+        width: 100%;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<!-- Хлебные крошки -->
+<nav aria-label="breadcrumb" class="mb-3">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="#">Главная</a></li>
+        <li class="breadcrumb-item"><a href="#">Статьи</a></li>
+        <li class="breadcrumb-item active text-truncate" aria-current="page">{{ article.title }}</li>
+    </ol>
+</nav>
+
+<article class="card shadow-sm">
+
+    <!-- Обложка: пока заглушка. Когда появится поле image — раскомментируйте блок ниже -->
+    {% comment %}
+    {% if article.image %}
+        <img src="{{ article.image.url }}" class="card-img-top article-cover" alt="{{ article.title }}">
+    {% else %}
+    {% endcomment %}
+        <svg class="card-img-top article-cover bg-body-secondary" height="300"
+             xmlns="http://www.w3.org/2000/svg" role="img"
+             aria-label="Изображение отсутствует" preserveAspectRatio="xMidYMid slice">
+            <title>Изображение отсутствует</title>
+            <rect width="100%" height="100%" fill="#dee2e6"></rect>
+            <text x="50%" y="50%" fill="#6c757d" dominant-baseline="middle"
+                  text-anchor="middle" font-size="20">Нет изображения</text>
+        </svg>
+    {% comment %}
+    {% endif %}
+    {% endcomment %}
+
+    <div class="card-body p-4">
+
+        <!-- Заголовок, дата и рейтинг -->
+        <div class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-start gap-2 mb-3">
+            <div>
+                <h1 class="h2 mb-1">{{ article.title }}</h1>
+                <time class="text-muted small" datetime="{{ article.created_at|date:'c' }}">
+                    {{ article.created_at|date:"d.m.Y, H:i" }}
+                </time>
+            </div>
+            <span class="badge rounded-pill fs-6 align-self-start
+                {% if article.rate >= 4 %}text-bg-success
+                {% elif article.rate >= 2 %}text-bg-warning
+                {% else %}text-bg-secondary{% endif %}">
+                ★ {{ article.rate }}
+            </span>
+        </div>
+
+        <hr>
+
+        <!-- Текст статьи -->
+        <div class="article-body lh-lg">
+            {% if article.text %}
+                {{ article.text|linebreaks }}
+            {% else %}
+                <p class="text-muted fst-italic mb-0">Текст статьи пока не добавлен.</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Действия -->
+    <div class="card-footer bg-transparent d-flex flex-wrap justify-content-between gap-2 p-3">
+        <a href="{% url 'article_list' %}" class="btn btn-outline-secondary">← Назад к списку</a>
+
+        {% if user.is_authenticated %}
+        <div class="d-flex gap-2">
+            <a href="#" class="btn btn-outline-primary">Редактировать</a>
+            <button type="button" class="btn btn-outline-danger"
+                    data-bs-toggle="modal" data-bs-target="#deleteModal">
+                Удалить
+            </button>
+        </div>
+        {% endif %}
+    </div>
+</article>
+
+<!-- Модалка подтверждения удаления -->
+{% if user.is_authenticated %}
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title fs-5" id="deleteModalLabel">Удалить статью?</h2>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
+            </div>
+            <div class="modal-body">
+                Статья «{{ article.title }}» будет удалена без возможности восстановления.
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                <form method="post" action="#">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger">Удалить</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+{% endblock %}

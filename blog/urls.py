@@ -17,14 +17,12 @@ Including another URLconf
 
 from django.contrib import admin
 from django.urls import path
-
-from articles.views import hello_name, hello_world
-from articles.views import articles_list, catalog_list
+from articles.views import articles_list, category_list, article_detail
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path("", hello_world),
-    path("hello/<str:name>", hello_name),
-    path("articles/", articles_list),
-    path("catalogs/", catalog_list),
+    path("categories/", category_list),
+    path("", articles_list, name="article_list"),
+    path("<int:id>/detail", article_detail, name="article_detail"),
 ]
+
