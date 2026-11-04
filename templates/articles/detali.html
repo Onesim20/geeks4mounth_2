@@ -9,6 +9,11 @@
         object-fit: cover;
         width: 100%;
     }
+    .comment-avatar {
+        width: 40px;
+        height: 40px;
+        flex-shrink: 0;
+    }
 </style>
 {% endblock %}
 
@@ -17,20 +22,18 @@
 <!-- Хлебные крошки -->
 <nav aria-label="breadcrumb" class="mb-3">
     <ol class="breadcrumb">
-        <li class="breadcrumb-item"><a href="#">Главная</a></li>
-        <li class="breadcrumb-item"><a href="#">Статьи</a></li>
+        <li class="breadcrumb-item"><a href="{% url 'article_list' %}">Главная</a></li>
+        <li class="breadcrumb-item"><a href="{% url 'article_list' %}">Статьи</a></li>
         <li class="breadcrumb-item active text-truncate" aria-current="page">{{ article.title }}</li>
     </ol>
 </nav>
 
 <article class="card shadow-sm">
 
-    <!-- Обложка: пока заглушка. Когда появится поле image — раскомментируйте блок ниже -->
-    {% comment %}
+    <!-- Обложка: если картинки нет, показываем заглушку -->
     {% if article.image %}
         <img src="{{ article.image.url }}" class="card-img-top article-cover" alt="{{ article.title }}">
     {% else %}
-    {% endcomment %}
         <svg class="card-img-top article-cover bg-body-secondary" height="300"
              xmlns="http://www.w3.org/2000/svg" role="img"
              aria-label="Изображение отсутствует" preserveAspectRatio="xMidYMid slice">
@@ -39,9 +42,7 @@
             <text x="50%" y="50%" fill="#6c757d" dominant-baseline="middle"
                   text-anchor="middle" font-size="20">Нет изображения</text>
         </svg>
-    {% comment %}
     {% endif %}
-    {% endcomment %}
 
     <div class="card-body p-4">
 
@@ -88,6 +89,67 @@
         {% endif %}
     </div>
 </article>
+
+<!-- ===================== КОММЕНТАРИИ ===================== -->
+<section id="comments" class="mt-4">
+
+    <h2 class="h4 mb-3">
+        Комментарии
+        <span class="badge rounded-pill text-bg-secondary fs-6 align-middle">{{ comments|length }}</span>
+    </h2>
+
+    <!-- Форма отправки комментария -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-body p-4">
+            <h3 class="h5 mb-3">Оставить комментарий</h3>
+
+            <form method="post" action="{% url 'comment_create' article.pk %}">
+                {% csrf_token %}
+
+                <div class="mb-3">
+                    <label for="id_author_name" class="form-label">Ваше имя</label>
+                    <input type="text" class="form-control" id="id_author_name"
+                           name="author_name" maxlength="100"
+                           placeholder="Как вас зовут?" required>
+                </div>
+
+                <div class="mb-3">
+                    <label for="id_text" class="form-label">Комментарий</label>
+                    <textarea class="form-control" id="id_text" name="text"
+                              rows="4" placeholder="Напишите, что думаете о статье" required></textarea>
+                </div>
+
+                <button type="submit" class="btn btn-primary">Отправить</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Список комментариев -->
+    {% for comment in comments %}
+        <div class="card shadow-sm mb-3">
+            <div class="card-body d-flex gap-3">
+                <div class="comment-avatar rounded-circle bg-primary-subtle text-primary-emphasis
+                            d-flex align-items-center justify-content-center fw-bold">
+                    {{ comment.author_name|first|upper }}
+                </div>
+                <div class="flex-grow-1">
+                    <div class="d-flex flex-wrap justify-content-between align-items-baseline gap-1 mb-1">
+                        <strong>{{ comment.author_name }}</strong>
+                        <time class="text-muted small" datetime="{{ comment.created_at|date:'c' }}">
+                            {{ comment.created_at|date:"d.m.Y, H:i" }}
+                        </time>
+                    </div>
+                    <div>{{ comment.text|linebreaksbr }}</div>
+                </div>
+            </div>
+        </div>
+    {% empty %}
+        <div class="alert alert-light border text-center mb-0">
+            Комментариев пока нет. Будьте первым!
+        </div>
+    {% endfor %}
+
+</section>
 
 <!-- Модалка подтверждения удаления -->
 {% if user.is_authenticated %}

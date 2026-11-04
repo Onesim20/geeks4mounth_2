@@ -1,16 +1,11 @@
 from django.http.request import HttpRequest
 from django.http.response import HttpResponse
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 
-from articles.models import Article, Category
+from articles.forms import ArticleForm, CommentForm
+from articles.models import Article, Category, Comment
 
 
-
-from django.http.request import HttpRequest
-from django.http.response import HttpResponse
-from django.shortcuts import render
-
-from articles.models import Article
 
 
 def articles_list(request: HttpRequest) -> HttpResponse:
@@ -21,11 +16,37 @@ def articles_list(request: HttpRequest) -> HttpResponse:
 
 def article_detail(request: HttpRequest, id: int) -> HttpResponse:
     article = Article.objects.get(id=id)
-    return render(request, "articles/detail.html", {"article": article})
+    form = CommentForm()
+    comments = article.comment_set.all()
+    return render(request, "articles/detail.html", {"article": article, "form": form, "comments": comments})
 
 
+def comment_create(request: HttpRequest, article_id: int) -> HttpResponse:
+    article = Article.objects.get(id=article_id)
+
+    if request.method == "POST":
+        form = CommentForm(request.POST)
+        if not form.is_valid():
+          commit = False
+          comment = form.save(commit=False)
+          comment.article = article
+          comment.save()
+
+        return redirect("article_detail", id=article_id)
 
 
+def article_create(request: HttpRequest) -> HttpResponse:
+
+    if request.method == "POST":
+        form = ArticleForm(request.POST, request.FILES)
+
+        if not form.is_valid():
+            raise ValueError()
+        form.save()
+        return redirect("article_list")
+    categories = Category.objects.all()
+    return render(request, "articles/create.html", {"categories": categories})
+    
 
 
 

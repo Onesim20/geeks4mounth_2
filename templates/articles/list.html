@@ -42,11 +42,9 @@
             {% endif %}
 
             <!-- Картинка: пока заглушка. Когда появится поле image — раскомментируйте блок ниже -->
-            {% comment %}
             {% if article.image %}
                 <img src="{{ article.image.url }}" class="card-img-top" alt="{{ article.title }}">
             {% else %}
-            {% endcomment %}
                 <svg class="card-img-top bg-body-secondary" width="100%" height="180"
                      xmlns="http://www.w3.org/2000/svg" role="img"
                      aria-label="Изображение отсутствует" preserveAspectRatio="xMidYMid slice">
@@ -55,9 +53,7 @@
                     <text x="50%" y="50%" fill="#6c757d" dominant-baseline="middle"
                           text-anchor="middle" font-size="16">Нет изображения</text>
                 </svg>
-            {% comment %}
             {% endif %}
-            {% endcomment %}
 
             <div class="card-body d-flex flex-column">
                 <h2 class="h5 card-title">

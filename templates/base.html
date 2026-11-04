@@ -38,7 +38,7 @@
                     {% if user.is_authenticated %}
                     <li class="nav-item">
                         <a class="nav-link {% if request.resolver_match.url_name == 'post_create' %}active{% endif %}"
-                           href="#">Новый пост</a>
+                           href="{% url 'article_create' %}">Новый пост</a>
                     </li>
                     {% endif %}
                 </ul>

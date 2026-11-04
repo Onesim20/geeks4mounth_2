@@ -17,12 +17,22 @@ Including another URLconf
 
 from django.contrib import admin
 from django.urls import path
-from articles.views import articles_list, category_list, article_detail
+from django.conf.urls.static import static
+from django.conf import settings
+from articles.views import articles_list, category_list, article_detail, article_create, comment_create
 
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("categories/", category_list),
     path("", articles_list, name="article_list"),
     path("<int:id>/detail", article_detail, name="article_detail"),
+    path("create/", article_create, name="article_create"),
+    path('<int:article_id>/comments/', comment_create, name='comment_create'),
 ]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+
 
