@@ -80,11 +80,8 @@
 
         {% if user.is_authenticated %}
         <div class="d-flex gap-2">
-            <a href="#" class="btn btn-outline-primary">Редактировать</a>
-            <button type="button" class="btn btn-outline-danger"
-                    data-bs-toggle="modal" data-bs-target="#deleteModal">
-                Удалить
-            </button>
+            <a href="{% url 'article_edit' article.pk %}" class="btn btn-outline-primary">Редактировать</a>
+            <a href="{% url 'article_delete' article.pk %}" class="btn btn-outline-danger">Удалить</a>
         </div>
         {% endif %}
     </div>
@@ -99,24 +96,29 @@
     </h2>
 
     <!-- Форма отправки комментария -->
-    <div class="card shadow-sm mb-4">
+    <div class="card shadow-sm mb-4" id="comment-form">
         <div class="card-body p-4">
             <h3 class="h5 mb-3">Оставить комментарий</h3>
 
-            <form method="post" action="{% url 'comment_create' article.pk %}">
+            <form method="post" action="{% url 'comment_create' article.pk %}" novalidate>
                 {% csrf_token %}
 
                 <div class="mb-3">
                     <label for="id_author_name" class="form-label">Ваше имя</label>
-                    <input type="text" class="form-control" id="id_author_name"
-                           name="author_name" maxlength="100"
-                           placeholder="Как вас зовут?" required>
+                    <input type="text" id="id_author_name" name="author_name" maxlength="50"
+                           class="form-control {% if form.author_name.errors %}is-invalid{% endif %}"
+                           placeholder="Как вас зовут?"
+                           value="{{ form.author_name.value|default_if_none:'' }}" required>
+                    <div class="invalid-feedback">{{ form.author_name.errors|join:" " }}</div>
                 </div>
 
                 <div class="mb-3">
                     <label for="id_text" class="form-label">Комментарий</label>
-                    <textarea class="form-control" id="id_text" name="text"
-                              rows="4" placeholder="Напишите, что думаете о статье" required></textarea>
+                    <textarea id="id_text" name="text" rows="4"
+                              class="form-control {% if form.text.errors %}is-invalid{% endif %}"
+                              placeholder="Напишите, что думаете о статье"
+                              required>{{ form.text.value|default_if_none:'' }}</textarea>
+                    <div class="invalid-feedback">{{ form.text.errors|join:" " }}</div>
                 </div>
 
                 <button type="submit" class="btn btn-primary">Отправить</button>
@@ -140,6 +142,12 @@
                         </time>
                     </div>
                     <div>{{ comment.text|linebreaksbr }}</div>
+                    {% if user.is_authenticated %}
+                    <div class="mt-2 d-flex gap-2">
+                        <a href="{% url 'comment_edit' comment.pk %}" class="btn btn-sm btn-outline-primary">Изменить</a>
+                        <a href="{% url 'comment_delete' comment.pk %}" class="btn btn-sm btn-outline-danger">Удалить</a>
+                    </div>
+                    {% endif %}
                 </div>
             </div>
         </div>
@@ -151,28 +159,10 @@
 
 </section>
 
-<!-- Модалка подтверждения удаления -->
-{% if user.is_authenticated %}
-<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2 class="modal-title fs-5" id="deleteModalLabel">Удалить статью?</h2>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
-            </div>
-            <div class="modal-body">
-                Статья «{{ article.title }}» будет удалена без возможности восстановления.
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
-                <form method="post" action="#">
-                    {% csrf_token %}
-                    <button type="submit" class="btn btn-danger">Удалить</button>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
-{% endif %}
+{% endblock %}
 
+{% block extra_js %}
+{% if form.errors %}
+<script>document.getElementById("comment-form").scrollIntoView();</script>
+{% endif %}
 {% endblock %}

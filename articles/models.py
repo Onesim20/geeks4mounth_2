@@ -18,20 +18,21 @@ class Article(models.Model):
 
 
 class Category(models.Model):
-      name = models.CharField(max_length=50)
+    name = models.CharField(max_length=50)
 
-def __str__(self) -> str:
+    def __str__(self) -> str:
         return self.name
 
 
 class Comment(models.Model):
-     article = models.ForeignKey(Article, on_delete=models.CASCADE)
-     author_name = models.CharField(max_length=50)
-     text = models.TextField()
-     created_at = models.DateTimeField(auto_now_add=True)
+    article = models.ForeignKey(Article, on_delete=models.CASCADE)
+    author_name = models.CharField(max_length=50)
+    text = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
 
-     def __str__(self) -> str:
+    def __str__(self) -> str:
         return f"Comment by {self.author_name} on {self.article.title}"
+    
 
 
 
@@ -68,6 +69,10 @@ class Comment(models.Model):
 
 
 
+
+
+
+    
 
 
 #CRUD - Create, Read, Update, Delete

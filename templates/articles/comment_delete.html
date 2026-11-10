@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block title %}Удаление комментария{% endblock %}
+{% block description %}Подтверждение удаления комментария{% endblock %}
+
+{% block content %}
+<div class="card shadow-sm border-danger">
+    <div class="card-header bg-danger text-white fw-semibold">Удаление комментария</div>
+    <div class="card-body">
+        <p class="mb-1">Вы действительно хотите удалить комментарий к статье «{{ comment.article.title }}»?</p>
+
+        <blockquote class="border-start border-3 ps-3 my-3">
+            <strong>{{ comment.author_name }}</strong>
+            <div class="text-muted">{{ comment.text|truncatechars:200|linebreaksbr }}</div>
+        </blockquote>
+
+        <p class="text-muted">Это действие необратимо.</p>
+
+        <form method="post" class="d-flex gap-2">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger">Да, удалить</button>
+            <a href="{% url 'article_detail' comment.article_id %}#comments"
+               class="btn btn-outline-secondary">Отмена</a>
+        </form>
+    </div>
+</div>
+{% endblock %}

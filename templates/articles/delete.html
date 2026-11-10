@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block title %}Удаление: {{ article.title }}{% endblock %}
+{% block description %}Подтверждение удаления статьи{% endblock %}
+
+{% block content %}
+<div class="card shadow-sm border-danger">
+    <div class="card-header bg-danger text-white fw-semibold">Удаление статьи</div>
+    <div class="card-body">
+        <p class="mb-1">Вы действительно хотите удалить статью?</p>
+        <p class="fw-semibold fs-5">«{{ article.title }}»</p>
+        <p class="text-muted">Это действие необратимо.</p>
+
+        <form method="post" class="d-flex gap-2">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger">Да, удалить</button>
+            <a href="{% url 'article_list' %}" class="btn btn-outline-secondary">Отмена</a>
+        </form>
+    </div>
+</div>
+{% endblock %}
