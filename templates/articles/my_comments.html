@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block title %}Мои комментарии — Blog{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="h3 mb-0">Мои комментарии</h1>
+    <span class="text-muted small">Всего: {{ comments|length }}</span>
+</div>
+
+{% for comment in comments %}
+<div class="card shadow-sm mb-3">
+    <div class="card-body">
+        <div class="d-flex flex-wrap justify-content-between align-items-baseline gap-1 mb-2">
+            <a href="{% url 'article_detail' comment.article_id %}#comments"
+               class="fw-semibold text-decoration-none">{{ comment.article.title }}</a>
+            <time class="text-muted small" datetime="{{ comment.created_at|date:'c' }}">
+                {{ comment.created_at|date:"d.m.Y, H:i" }}
+            </time>
+        </div>
+        <div>{{ comment.text|linebreaksbr }}</div>
+        <div class="mt-2 d-flex gap-2">
+            <a href="{% url 'comment_edit' comment.pk %}" class="btn btn-sm btn-outline-primary">Изменить</a>
+            <a href="{% url 'comment_delete' comment.pk %}" class="btn btn-sm btn-outline-danger">Удалить</a>
+        </div>
+    </div>
+</div>
+{% empty %}
+<div class="alert alert-light border text-center">Вы пока не оставили ни одного комментария.</div>
+{% endfor %}
+{% endblock %}

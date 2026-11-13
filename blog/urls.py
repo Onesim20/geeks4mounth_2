@@ -18,7 +18,7 @@ Including another URLconf
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
-from django.urls import path
+from django.urls import include, path
 
 from articles.views import (
     article_create,
@@ -30,12 +30,17 @@ from articles.views import (
     comment_create,
     comment_delete,
     comment_edit,
+    my_articles,
+    my_comments,
+    signup,
 )
 
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("categories/", category_list),
     path("", articles_list, name="article_list"),
+    path("my", my_articles, name="my_articles"),
+    path("my-comments", my_comments, name="my_comments"),
     path("<int:id>/detail", article_detail, name="article_detail"),
     path("<int:id>/edit", article_edit, name="article_edit"),
     path("<int:id>/delete", article_delete, name="article_delete"),
@@ -43,6 +48,8 @@ urlpatterns = [
     path("<int:article_id>/comments/", comment_create, name="comment_create"),
     path("comments/<int:id>/edit", comment_edit, name="comment_edit"),
     path("comments/<int:id>/delete", comment_delete, name="comment_delete"),
+    path("accounts/signup/", signup, name="signup"),
+    path("accounts/", include("django.contrib.auth.urls")),
 ]
 
 if settings.DEBUG:

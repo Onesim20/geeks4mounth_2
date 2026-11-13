@@ -26,19 +26,11 @@ class ArticleForm(forms.ModelForm):
             "category": forms.Select(attrs={"class": "form-select"}),
         }
 
-    
-    def validation_title(self, title):
-        if len(title) > 10:
-            raise forms.ValidationError("validation error from func")
-
-    
     def clean_title(self):
         title = self.cleaned_data["title"]
 
         if title == "NOT VALID":
             raise forms.ValidationError("TUT")
-
-        self.validation_title(title)
 
         return title
 
@@ -46,22 +38,11 @@ class ArticleForm(forms.ModelForm):
 class CommentForm(forms.ModelForm):
     class Meta:
         model = Comment
-        fields = ("author_name", "text")
+        fields = ("text",)
         widgets = {
-            "author_name": forms.TextInput(attrs={"class": "form-control"}),
             "text": forms.Textarea(attrs={"class": "form-control", "rows": 4}),
         }
 
-    
-    def clean_author_name(self):
-        author_name = self.cleaned_data["author_name"].strip()
-
-        if author_name.replace(" ", "").isdigit():
-            raise forms.ValidationError("Имя не может состоять только из цифр.")
-
-        return author_name
-
-    
     def clean_text(self):
         text = self.cleaned_data["text"].strip()
 

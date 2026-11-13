@@ -10,7 +10,7 @@
         <p class="mb-1">Вы действительно хотите удалить комментарий к статье «{{ comment.article.title }}»?</p>
 
         <blockquote class="border-start border-3 ps-3 my-3">
-            <strong>{{ comment.author_name }}</strong>
+            <strong>{{ comment.user.username }}</strong>
             <div class="text-muted">{{ comment.text|truncatechars:200|linebreaksbr }}</div>
         </blockquote>
 
