@@ -5,3 +5,4 @@ db.sqlite3
 db.articles_db.sqlite3
 db.posts_db.sqlite3
 .vscode/
+media/
